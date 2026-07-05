@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { registerPlayer, updateScore } from "../api/leaderboard";
+import { registerPlayer, updateScore, checkUserExists } from "../api/leaderboard";
 
 // ── Game constants ──
 const WIDTH = 320;
@@ -55,14 +55,25 @@ export function FlappyBird() {
   const stateRef = useRef<GameState>(initialState());
   const phaseRef = useRef<Phase>("idle");
   phaseRef.current = phase;
+  const registeredRef = useRef<string | null>(null);
 
   // Best-effort registration so /update has a player to add points to.
+  // Register once per username so /add isn't re-sent on retries.
   async function ensureRegistered(name: string) {
+    if (registeredRef.current === name) return;
     try {
-      await registerPlayer(name);
+      // Only add the user if they don't already exist, so we never hit the
+      // unique-username constraint on /add.
+      const { exists } = await checkUserExists(name);
+      if (!exists) {
+        await registerPlayer(name);
+      }
     } catch {
-      // Player likely already exists — that's fine.
+      // Non-fatal: if the check or add fails, still let the player play.
+      // /update tolerates an existing user, and a duplicate /add is harmless.
     }
+    // Mark handled either way; a retry shouldn't re-hit the API.
+    registeredRef.current = name;
   }
 
   async function submitScore(name: string, finalScore: number) {

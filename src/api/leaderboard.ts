@@ -15,6 +15,15 @@ export async function registerPlayer(username: string): Promise<{ response: stri
   return handleResponse(res);
 }
 
+export async function checkUserExists(
+  username: string
+): Promise<{ exists: boolean }> {
+  const res = await fetch(`${BASE_URL}/exists/${encodeURIComponent(username)}`, {
+    method: "GET",
+  });
+  return handleResponse(res);
+}
+
 export async function updateScore(
   username: string,
   score: number
