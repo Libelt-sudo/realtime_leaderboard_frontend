@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import type { LeaderboardEntry } from "../types";
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const SOCKET_URL = import.meta.env.SOCKET_URL;
 
 export function useSocket() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -10,7 +10,7 @@ export function useSocket() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const s = io(SOCKET_URL, { transports: ["websocket", "polling"] });
+    const s = io(SOCKET_URL, { withCredentials: true });
 
     s.on("connect", () => setConnected(true));
     s.on("disconnect", () => setConnected(false));
