@@ -11,10 +11,18 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-inner">
+          <div className="header-left">
+            <a href="#top" className="nav__logo">&lt;superhack0r/&gt;</a>
+            <nav className="nav">
+              <a href="https://luis-seibet.com" className="nav__link">Portfolio</a>
+            </nav>
+          </div>
           <h1 className="app-title">
             <span className="trophy">🏆</span> Realtime Leaderboard
           </h1>
-          <ConnectionStatus connected={connected} />
+          <div className="header-right">
+            <ConnectionStatus connected={connected} />
+          </div>
         </div>
       </header>
 
